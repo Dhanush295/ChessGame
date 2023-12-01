@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "qs";
-import { CLIENT_ID, CLIENT_SECRET, OAUTH_REDIRECT } from ".."
+import { CLIENT_ID, CLIENT_SECRET, OAUTH_REDIRECT } from "../.."
 
 interface TokenResponse {
     access_token: string;
@@ -28,7 +28,9 @@ export async function getOauthTokens({ code }: { code: string }): Promise<TokenR
           "Content-Type": "application/x-www-form-urlencoded",
         },
       });
+      console.log(response.data)
       return response.data;
+      
     } catch (error: any) {
       console.error(error, "Failed to get Google Tokens");
       throw new Error(error.message);

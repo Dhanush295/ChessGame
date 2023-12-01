@@ -16,13 +16,6 @@ model User {
   name String
   password  String?
   profileImg String  
-  posts Sessions[]
+  accountCreatedAt DateTime @default(now())
 }
 
-model Sessions {
-  id        Int     @id @default(autoincrement())
-  vaild     Boolean?
-  timeStamp  DateTime @default(now())
-  author    User    @relation(fields: [authorId], references: [id])
-  authorId  Int
-}

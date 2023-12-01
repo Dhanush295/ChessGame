@@ -1,4 +1,4 @@
-import { CLIENT_ID, OAUTH_REDIRECT } from "..";
+import { CLIENT_ID, OAUTH_REDIRECT } from "../..";
 
 export function getGoogleUrl(){
     const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";

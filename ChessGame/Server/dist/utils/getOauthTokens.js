@@ -32,6 +32,7 @@ function getOauthTokens(_a) {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
             });
+            console.log(response.data);
             return response.data;
         }
         catch (error) {
