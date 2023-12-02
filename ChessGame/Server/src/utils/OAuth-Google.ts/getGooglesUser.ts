@@ -9,6 +9,7 @@ export interface GoogleUserResult {
     family_name: string;
     picture: string;
     locale: string;
+    password?: string;
   }
   
   export async function getGoogleUser({id_token, access_token}: any): Promise<GoogleUserResult> {

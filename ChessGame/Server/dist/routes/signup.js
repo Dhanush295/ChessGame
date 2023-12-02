@@ -13,12 +13,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const signJwt_1 = require("../utils/signJwt");
-const getGoogleUrl_1 = require("../utils/getGoogleUrl");
-const getOauthTokens_1 = require("../utils/getOauthTokens");
-const getGooglesUser_1 = require("../utils/getGooglesUser");
+const getGoogleUrl_1 = require("../utils/OAuth-Google.ts/getGoogleUrl");
+const getOauthTokens_1 = require("../utils/OAuth-Google.ts/getOauthTokens");
+const getGooglesUser_1 = require("../utils/OAuth-Google.ts/getGooglesUser");
 const client_1 = require("@prisma/client");
-const createSession_1 = require("../utils/createSession");
+const signup_1 = require("../controller/signup");
 const prisma = new client_1.PrismaClient();
 const router = express_1.default.Router();
 const accessTokenCookieOption = {
@@ -42,9 +41,7 @@ router.get('/auth/google/callback', (req, res) => __awaiter(void 0, void 0, void
     try {
         const code = req.query.code;
         const { id_token, access_token } = yield (0, getOauthTokens_1.getOauthTokens)({ code });
-        console.log({ id_token, access_token });
         const googleUser = yield (0, getGooglesUser_1.getGoogleUser)({ id_token, access_token });
-        console.log(getGoogleUrl_1.getGoogleUrl);
         if (!googleUser.verified_email) {
             return res.status(403).json({ message: "Email Not verified" });
         }
@@ -57,28 +54,17 @@ router.get('/auth/google/callback', (req, res) => __awaiter(void 0, void 0, void
                     profileImg: googleUser.picture
                 },
             });
-            const session = yield (0, createSession_1.createSession)({ userId: user.id });
-            const accessToken = signJwt(Object.assign(Object.assign({}, user), { session: session.id }), { expiresIn: '15m' });
-            const refreshToken = signJwt(Object.assign(Object.assign({}, user), { session: session.id }), { expiresIn: '30d' });
-            res.cookie("accessToken", accessToken, accessTokenCookieOption);
-            res.cookie("refreshToken", refreshToken, refreshTokenCookieOption);
             console.log("Email updated successfully");
+            return res.redirect("http://localhost:3000/home");
         }
         else {
-            const session = yield (0, createSession_1.createSession)({ userId: user.id });
-            const accessToken = (0, signJwt_1.mySignJwt)(Object.assign(Object.assign({}, user), { session: session.id }), { expiresIn: '15m' });
-            const refreshToken = (0, signJwt_1.mySignJwt)(Object.assign(Object.assign({}, user), { session: session.id }), { expiresIn: '30d' });
-            res.cookie("accessToken", accessToken, accessTokenCookieOption);
-            res.cookie("refreshToken", refreshToken, refreshTokenCookieOption);
+            return res.status(403).json({ message: "User Not Found" });
         }
-        return res.redirect("http://localhost:3000/home");
     }
     catch (error) {
         console.error(error, "Failed to get User");
         return res.redirect("http://localhost:3000/oauth/error");
     }
 }));
+router.post('/login', signup_1.signup);
 exports.default = router;
-function signJwt(arg0, arg1) {
-    throw new Error("Function not implemented.");
-}

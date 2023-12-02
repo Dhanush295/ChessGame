@@ -15,7 +15,7 @@ model User {
   email String  @unique
   name String
   password  String?
-  profileImg String  
+  profileImg String?  
   accountCreatedAt DateTime @default(now())
 }
 
