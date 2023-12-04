@@ -47,10 +47,10 @@ function googleOauthredirect(req, res) {
                 });
                 const generatedAccessToken = (0, accessandrefresh_1.cerateAccesstoken)(userCreated);
                 const generatedrefreshToken = (0, accessandrefresh_1.createRefreshtoken)(userCreated);
+                console.log("Email updated successfully");
                 res.cookie("accessToken", generatedAccessToken, exports.accessTokenCookieOption);
                 res.cookie("refreshToken", generatedrefreshToken, exports.refreshTokenCookieOption);
-                console.log("Email updated successfully");
-                return res.redirect("http://localhost:3000/home");
+                return res.status(200).json({ message: "USer Created Successfully! ", token: { generatedAccessToken } });
             }
         }
         catch (error) {

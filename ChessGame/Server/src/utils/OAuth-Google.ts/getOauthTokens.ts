@@ -28,7 +28,6 @@ export async function getOauthTokens({ code }: { code: string }): Promise<TokenR
           "Content-Type": "application/x-www-form-urlencoded",
         },
       });
-      console.log(response.data)
       return response.data;
       
     } catch (error: any) {

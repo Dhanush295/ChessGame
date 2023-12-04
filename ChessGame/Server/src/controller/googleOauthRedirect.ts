@@ -64,15 +64,13 @@ export async function googleOauthredirect(req:Request, res:Response){
             const generatedAccessToken = cerateAccesstoken(userCreated);
             const generatedrefreshToken = createRefreshtoken(userCreated)
 
+            console.log("Email updated successfully");
             res.cookie("accessToken", generatedAccessToken, accessTokenCookieOption);
             res.cookie("refreshToken", generatedrefreshToken, refreshTokenCookieOption);
-            
-            console.log("Email updated successfully");
-            return res.redirect("http://localhost:3000/home")
+            return res.status(200).json({message: "USer Created Successfully! ", token: {generatedAccessToken}}) 
         }   
     }catch(error: any){
         console.error(error, "Failed to get User");
-        
         return res.redirect("http://localhost:3000/oauth/error")
     }
     

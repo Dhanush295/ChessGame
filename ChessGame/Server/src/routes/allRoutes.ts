@@ -1,7 +1,7 @@
 import express, { CookieOptions } from "express";
 import { Request, Response } from "express";
 import { getGoogleUrl } from "../utils/OAuth-Google.ts/getGoogleUrl";
-
+import { authenticatemiddleware } from "../middleweare/authenticatejwt";
 import { Oauthsignup } from "../controller/Oauthsignup";
 import { googleOauthredirect } from "../controller/googleOauthRedirect";
 import { signup } from "../controller/signup";
@@ -10,7 +10,7 @@ import { login } from "../controller/login";
 
 const router = express.Router();
 
-router.get('/home', (req: Request, res: Response) => {
+router.get('/home', authenticatemiddleware, (req: Request, res: Response) => {
     const googleAuthUrl = getGoogleUrl(); 
     res.send("Home boy");
 });

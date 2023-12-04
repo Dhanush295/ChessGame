@@ -33,15 +33,13 @@ export async function signup(req: Request, res: Response){
         })
         
         const generatedAccessToken = cerateAccesstoken(userCreated);
-        const generatedrefreshToken = createRefreshtoken(userCreated)
+        const generatedrefreshToken = createRefreshtoken(userCreated);
 
-        res.cookie("accessToken", generatedAccessToken, accessTokenCookieOption);
-        res.cookie("refreshToken", generatedrefreshToken, refreshTokenCookieOption);
-        
         console.log("Email updated successfully");
-        return res.status(200).json({message: "User Created Successfully! "})
+        res.cookie("refreshToken", generatedrefreshToken, refreshTokenCookieOption);
+        return res.status(200).json({message: "User Created Successfully! ", token: {generatedAccessToken}})
     }
     else{
-        return res.status(403).json({message: "User already exist please login! "})
+        return res.redirect('http://localhost:3000/home');
     }
 }

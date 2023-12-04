@@ -27,9 +27,9 @@ function login(req, res) {
                 if (!isPasswordMatch) {
                     return res.status(400).json({ message: "Incorrect password!" });
                 }
-                return res.status(200).json({ message: "USer LoggedIN Successfully! " });
+                return res.status(200).json({ message: "User LoggedIN Successfully! " });
             }
-            return res.status(200).json({ message: "USer LoggedIN Successfully! " });
+            return res.status(200).json({ message: "User LoggedIN Successfully! " });
         }
         return res.status(404).json({ message: "user Not Found! " });
     });
