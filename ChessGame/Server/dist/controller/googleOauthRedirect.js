@@ -47,8 +47,17 @@ function googleOauthredirect(req, res) {
                 });
                 const generatedAccessToken = (0, accessandrefresh_1.cerateAccesstoken)(userCreated);
                 const generatedrefreshToken = (0, accessandrefresh_1.createRefreshtoken)(userCreated);
-                console.log("Email updated successfully");
-                res.cookie("accessToken", generatedAccessToken, exports.accessTokenCookieOption);
+                const updateRefreshToken = yield prisma.user.update({
+                    where: { email: userCreated.email },
+                    data: {
+                        refreshtoken: {
+                            push: generatedrefreshToken,
+                        },
+                    },
+                });
+                if (!updateRefreshToken)
+                    return res.sendStatus(400).json({ message: "No refresh token created! " });
+                // res.cookie("accessToken", generatedAccessToken, accessTokenCookieOption);
                 res.cookie("refreshToken", generatedrefreshToken, exports.refreshTokenCookieOption);
                 return res.status(200).json({ message: "USer Created Successfully! ", token: { generatedAccessToken } });
             }

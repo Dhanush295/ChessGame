@@ -62,10 +62,19 @@ export async function googleOauthredirect(req:Request, res:Response){
             })
 
             const generatedAccessToken = cerateAccesstoken(userCreated);
-            const generatedrefreshToken = createRefreshtoken(userCreated)
+            const generatedrefreshToken = createRefreshtoken(userCreated);
+            const updateRefreshToken = await prisma.user.update({
+                where: { email: userCreated.email }, 
+                data: {
+                  refreshtoken: {
+                    push: generatedrefreshToken, 
+                  },
+                },
+              });
 
-            console.log("Email updated successfully");
-            res.cookie("accessToken", generatedAccessToken, accessTokenCookieOption);
+            if(!updateRefreshToken) return res.sendStatus(400).json({message: "No refresh token created! "})
+  
+            // res.cookie("accessToken", generatedAccessToken, accessTokenCookieOption);
             res.cookie("refreshToken", generatedrefreshToken, refreshTokenCookieOption);
             return res.status(200).json({message: "USer Created Successfully! ", token: {generatedAccessToken}}) 
         }   

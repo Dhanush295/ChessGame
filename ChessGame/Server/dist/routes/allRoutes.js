@@ -10,7 +10,10 @@ const Oauthsignup_1 = require("../controller/Oauthsignup");
 const googleOauthRedirect_1 = require("../controller/googleOauthRedirect");
 const signup_1 = require("../controller/signup");
 const login_1 = require("../controller/login");
+const handleToken_1 = require("../controller/handleToken");
+// import cookieParser from 'cookie-parser';
 const router = express_1.default.Router();
+// router.use(cookieParser());
 router.get('/home', authenticatejwt_1.authenticatemiddleware, (req, res) => {
     const googleAuthUrl = (0, getGoogleUrl_1.getGoogleUrl)();
     res.send("Home boy");
@@ -19,4 +22,5 @@ router.get('/oAuthSignup', Oauthsignup_1.Oauthsignup);
 router.get("/auth/google/callback", googleOauthRedirect_1.googleOauthredirect);
 router.post('/signup', signup_1.signup);
 router.post('/login', login_1.login);
+router.get('/refresh/token', handleToken_1.handleToken);
 exports.default = router;

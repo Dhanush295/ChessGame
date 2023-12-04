@@ -15,8 +15,6 @@ export interface userBodydataI {
 
 export async function signup(req: Request, res: Response){
     const userData:userBodydataI = req.body;
-
-    const password = hashPassword(userData.password);
     const userexist = await prisma.user.findUnique({
         where: {
             email: userData.email
@@ -24,22 +22,36 @@ export async function signup(req: Request, res: Response){
     })
 
     if(!userexist){
-        const userCreated = await prisma.user.create({
-            data: {
-                email: userData.email,
-                password: password,
-                name: userData.name
-            }
-        })
-        
-        const generatedAccessToken = cerateAccesstoken(userCreated);
-        const generatedrefreshToken = createRefreshtoken(userCreated);
+        if(userData.password){
+            const hashedPassword = hashPassword(userData.password);
 
-        console.log("Email updated successfully");
-        res.cookie("refreshToken", generatedrefreshToken, refreshTokenCookieOption);
-        return res.status(200).json({message: "User Created Successfully! ", token: {generatedAccessToken}})
+            const userCreated = await prisma.user.create({
+                data: {
+                    email: userData.email,
+                    password: hashedPassword,
+                    name: userData.name
+                }
+            })
+            if(!userCreated) return res.sendStatus(400).json({message: " USer Not Cerated "})
+    
+            return res.status(200).json({message: "User Created Successfully! "})
+
+        }
+        else{
+            const userCreated = await prisma.user.create({
+                data: {
+                    email: userData.email,
+                    name: userData.name
+                }
+            })
+
+            if(!userCreated) return res.sendStatus(400).json({message: " USer Not Cerated "})
+            
+            return res.status(200).json({message: "User Created Successfully! " })
+
+        }
     }
     else{
-        return res.redirect('http://localhost:3000/home');
+        return res.sendStatus(400).json({message: "User Already Exist! "});
     }
 }

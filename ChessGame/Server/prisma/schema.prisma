@@ -16,6 +16,7 @@ model User {
   name String
   password  String?
   profileImg String?  
+  refreshtoken String[]  
   accountCreatedAt DateTime @default(now())
 }
 

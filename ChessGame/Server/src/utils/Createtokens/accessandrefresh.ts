@@ -7,7 +7,7 @@ export function cerateAccesstoken(user: { id: number }): string | undefined {
         return jwt.sign({ 
             id: user.id
         }, SECRET, { 
-            expiresIn: '45m'
+            expiresIn: '1m'
         });
     } 
     return undefined;
@@ -18,7 +18,7 @@ export function createRefreshtoken(user:{id: number}): string | undefined {
         return jwt.sign({ 
             id: user.id
         }, SECRET, { 
-            expiresIn: '45m'
+            expiresIn: '30d'
         });
     } 
     return undefined;

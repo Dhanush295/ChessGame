@@ -11,35 +11,44 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.signup = void 0;
 const client_1 = require("@prisma/client");
-const accessandrefresh_1 = require("../utils/Createtokens/accessandrefresh");
-const googleOauthRedirect_1 = require("./googleOauthRedirect");
 const hash_1 = require("../utils/HashPassword/hash");
 const prisma = new client_1.PrismaClient();
 function signup(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const userData = req.body;
-        const password = (0, hash_1.hashPassword)(userData.password);
         const userexist = yield prisma.user.findUnique({
             where: {
                 email: userData.email
             }
         });
         if (!userexist) {
-            const userCreated = yield prisma.user.create({
-                data: {
-                    email: userData.email,
-                    password: password,
-                    name: userData.name
-                }
-            });
-            const generatedAccessToken = (0, accessandrefresh_1.cerateAccesstoken)(userCreated);
-            const generatedrefreshToken = (0, accessandrefresh_1.createRefreshtoken)(userCreated);
-            console.log("Email updated successfully");
-            res.cookie("refreshToken", generatedrefreshToken, googleOauthRedirect_1.refreshTokenCookieOption);
-            return res.status(200).json({ message: "User Created Successfully! ", token: { generatedAccessToken } });
+            if (userData.password) {
+                const hashedPassword = (0, hash_1.hashPassword)(userData.password);
+                const userCreated = yield prisma.user.create({
+                    data: {
+                        email: userData.email,
+                        password: hashedPassword,
+                        name: userData.name
+                    }
+                });
+                if (!userCreated)
+                    return res.sendStatus(400).json({ message: " USer Not Cerated " });
+                return res.status(200).json({ message: "User Created Successfully! " });
+            }
+            else {
+                const userCreated = yield prisma.user.create({
+                    data: {
+                        email: userData.email,
+                        name: userData.name
+                    }
+                });
+                if (!userCreated)
+                    return res.sendStatus(400).json({ message: " USer Not Cerated " });
+                return res.status(200).json({ message: "User Created Successfully! " });
+            }
         }
         else {
-            return res.redirect('http://localhost:3000/home');
+            return res.sendStatus(400).json({ message: "User Already Exist! " });
         }
     });
 }

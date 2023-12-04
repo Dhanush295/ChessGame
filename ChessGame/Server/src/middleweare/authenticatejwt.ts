@@ -5,10 +5,29 @@ import { cerateAccesstoken, createRefreshtoken } from '../utils/Createtokens/acc
 import { get } from "lodash";
 
 export const authenticatemiddleware = (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies.accessToken
-    console.log(token)
+    const authHeader = req.headers.authorization;
+    
+    if (authHeader) {
+        const token = authHeader.split(' ')[1];
+        jwt.verify(token, SECRET as string, (err, decoded) => {
+          if (err) {
+            return res.sendStatus(403);
+          }
+          if (!decoded) {
+            return res.sendStatus(403);
+          }
+          if (typeof decoded === "string") {
+            return res.sendStatus(403);
+          }
+          
+          req.user = decoded.id;
+          console.log(req.user)
+          next();
+        });
+      } else {
+        res.sendStatus(401);
+      }
+    };
 
-    next();
-};
 
 

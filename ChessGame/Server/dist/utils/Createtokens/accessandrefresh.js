@@ -11,7 +11,7 @@ function cerateAccesstoken(user) {
         return jsonwebtoken_1.default.sign({
             id: user.id
         }, __1.SECRET, {
-            expiresIn: '45m'
+            expiresIn: '1m'
         });
     }
     return undefined;
@@ -22,7 +22,7 @@ function createRefreshtoken(user) {
         return jsonwebtoken_1.default.sign({
             id: user.id
         }, __1.SECRET, {
-            expiresIn: '45m'
+            expiresIn: '30d'
         });
     }
     return undefined;

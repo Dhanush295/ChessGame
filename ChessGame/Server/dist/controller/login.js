@@ -12,6 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.login = void 0;
 const client_1 = require("@prisma/client");
 const hash_1 = require("../utils/HashPassword/hash");
+const accessandrefresh_1 = require("../utils/Createtokens/accessandrefresh");
+const googleOauthRedirect_1 = require("./googleOauthRedirect");
 const prisma = new client_1.PrismaClient();
 function login(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -24,12 +26,39 @@ function login(req, res) {
         if (userexist) {
             if (userexist.password) {
                 const isPasswordMatch = yield (0, hash_1.comparePasswords)(userData.password, userexist.password);
-                if (!isPasswordMatch) {
+                if (!isPasswordMatch)
                     return res.status(400).json({ message: "Incorrect password!" });
-                }
-                return res.status(200).json({ message: "User LoggedIN Successfully! " });
+                const generatedAccessToken = (0, accessandrefresh_1.cerateAccesstoken)(userexist);
+                const generatedrefreshToken = (0, accessandrefresh_1.createRefreshtoken)(userexist);
+                const updateRefreshToken = yield prisma.user.update({
+                    where: { email: userexist.email },
+                    data: {
+                        refreshtoken: {
+                            push: generatedrefreshToken,
+                        },
+                    },
+                });
+                if (!updateRefreshToken)
+                    return res.sendStatus(400).json({ message: "No refresh token created! " });
+                console.log("Email updated successfully");
+                res.cookie("refreshToken", generatedrefreshToken, googleOauthRedirect_1.refreshTokenCookieOption);
+                return res.status(200).json({ message: "USer LogedIn Successfully! ", token: { generatedAccessToken } });
             }
-            return res.status(200).json({ message: "User LoggedIN Successfully! " });
+            const generatedAccessToken = (0, accessandrefresh_1.cerateAccesstoken)(userexist);
+            const generatedrefreshToken = (0, accessandrefresh_1.createRefreshtoken)(userexist);
+            const updateRefreshToken = yield prisma.user.update({
+                where: { email: userexist.email },
+                data: {
+                    refreshtoken: {
+                        push: generatedrefreshToken,
+                    },
+                },
+            });
+            if (!updateRefreshToken)
+                return res.sendStatus(400).json({ message: "No refresh token created! " });
+            console.log("Email updated successfully");
+            res.cookie("refreshToken", generatedrefreshToken, googleOauthRedirect_1.refreshTokenCookieOption);
+            return res.status(200).json({ message: "USer LogedIn Successfully! ", token: { generatedAccessToken } });
         }
         return res.status(404).json({ message: "user Not Found! " });
     });
